@@ -38,10 +38,4 @@ RUN npx puppeteer browsers install chrome --install-deps
 ENTRYPOINT ["node", "build/src/bin/chrome-devtools-mcp.js"]
 
 # Headless + isolated profile, with Chrome flags required inside containers.
-CMD [
-  "--headless",
-  "--isolated",
-  "--chrome-arg=--no-sandbox",
-  "--chrome-arg=--disable-setuid-sandbox",
-  "--chrome-arg=--disable-dev-shm-usage"
-]
+CMD ["--headless", "--isolated", "--chrome-arg=--no-sandbox", "--chrome-arg=--disable-setuid-sandbox", "--chrome-arg=--disable-dev-shm-usage"]
