@@ -35,11 +35,15 @@ RUN npm ci --ignore-scripts \
 COPY --from=build /app/build ./build
 COPY --from=build /app/LICENSE ./LICENSE
 
+# Install "Chrome for Testing" into the Puppeteer cache and expose it at a
+# fixed path. The server otherwise resolves Chrome by channel and looks for a
+# branded install at /opt/google/chrome/chrome, which does not exist here.
 RUN apt-get update \
     && npx puppeteer browsers install chrome --install-deps \
+    && ln -sf "$(find /root/.cache/puppeteer/chrome -type f -name chrome | head -n 1)" /usr/local/bin/chrome \
     && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["node", "build/src/bin/chrome-devtools-mcp.js"]
 
 # Headless + isolated profile, with Chrome flags required inside containers.
-CMD ["--headless", "--isolated", "--chrome-arg=--no-sandbox", "--chrome-arg=--disable-setuid-sandbox", "--chrome-arg=--disable-dev-shm-usage"]
+CMD ["--headless", "--isolated", "--executablePath=/usr/local/bin/chrome", "--chrome-arg=--no-sandbox", "--chrome-arg=--disable-setuid-sandbox", "--chrome-arg=--disable-dev-shm-usage"]
